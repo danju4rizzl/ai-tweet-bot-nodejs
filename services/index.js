@@ -9,7 +9,7 @@ dotenv.config()
  * This function is used to call the News API
  */
 const getNews = async function () {
-	const url = `https://newsapi.org/v2/top-headlines?apiKey=${process.env.NEWS_API_KEY}&category=general&language=en`
+	const url = `https://newsapi.org/v2/top-headlines?apiKey=${process.env.NEWS_API_KEY}&category=technology&language=en`
 
 	// use the url to get the list of news
 	const res = await axios.get(url)
@@ -20,7 +20,7 @@ const getNews = async function () {
 /*
  * This function is used to call the OpenAI's GPT-3.5-turbo API
  */
-const askChatGPT = async function (contentToAsk) {
+const translateText = async function (contentToAsk) {
 	const openAiConfig = new Configuration({
 		apiKey: process.env.OPENAI_API_KEY
 	})
@@ -43,7 +43,7 @@ const askChatGPT = async function (contentToAsk) {
 /*
  * This function is used to post a tweet to twitter
  */
-const postTweet = async function (tweetText) {
+const postTweet = async function (tweet) {
 	// Create a new instance of the TwitterApi class
 	const client = new TwitterApi({
 		appKey: process.env.TWITTER_API_KEY,
@@ -56,8 +56,8 @@ const postTweet = async function (tweetText) {
 	const rwClient = client.readWrite
 
 	try {
-		await rwClient.v2.tweet(tweetText)
-		console.log("🟢 Successfully posted the tweet")
+		await rwClient.v2.tweet(tweet)
+		console.log(`🟢 Successfully posted the tweet: \n ${tweet} \n`)
 	} catch (error) {
 		console.log(`🔴 Error posting the tweet ${error}`)
 	}
@@ -77,7 +77,7 @@ export const translateAndPostNews = async function () {
 			newsTitles[Math.floor(Math.random() * newsTitles.length)]
 
 		// send the random news title to the AI
-		const aiResponse = await askChatGPT(randomNewsTitle)
+		const aiResponse = await translateText(randomNewsTitle)
 
 		// get the first choice from the AI response
 		const aiMessage = aiResponse.data.choices[0].message
